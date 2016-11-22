@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import socket
 import os
 import plock
@@ -24,7 +25,9 @@ def send_message_and_close(s, d):
 
 terminal = False
 
-while not terminal:
+pid = os.fork()
+
+while not terminal and pid == 0:
     client_socket, addr = server_socket.accept()
     option, data = plock.parse_request(client_socket)
     if option == plock.LOCK:
@@ -55,3 +58,4 @@ while not terminal:
         terminal = True
         send_message_and_close(client_socket, plock.SUCCESS)
     
+os.system('chmod 777 %s'%socket_path)
