@@ -1,11 +1,14 @@
 #!/usr/bin/python
 import socket
 import os
+import sys
 import plock
 from plock_conf import socket_path
+from plock_conf import log_path
 
-EXIT = 'E'
-os.unlink(socket_path)
+if os.path.exists(socket_path): os.unlink(socket_path)
+sys.stdout = sys.stderr = open(log_path, 'a+', 0)
+os.chmod(log_path, 0x777)
 
 server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 server_socket.bind(socket_path)
@@ -54,8 +57,12 @@ while not terminal and pid == 0:
             send_message_and_close(client_socket, plock.SUCCESS)
         else:
             send_message_and_close(client_socket, plock.NOLOCK)
-    if option == EXIT:
+    if option == plock.EXIT:
         terminal = True
         send_message_and_close(client_socket, plock.SUCCESS)
+    if option == plock.PRINT:
+        print bulk_lock
+        print waiting_queue
+        send_message_and_close(client_socket, plock.SUCCESS)
     
-os.system('chmod 777 %s'%socket_path)
+os.chmod(socket_path, 0x777)
