@@ -1,0 +1,12 @@
+[Unit]
+Description= Process Lock Service
+
+[Service]
+Type=forking
+ExecStart=/projects/plock/main.py
+ExecStop=/projects/plock/terminal.py
+KillMode=process
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target
